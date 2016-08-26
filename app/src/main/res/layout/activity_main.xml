@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/parentLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="farksa.tdk.ocr.MainActivity">
+    <farkas.tdk.view.CameraSurface
+        android:id="@+id/cameraSurface"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="true"/>
+    <farkas.tdk.view.CanvasSurface
+        android:id="@+id/canvasSurface"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="true"/>
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" 
+        android:layout_alignParentTop="true"
+        android:src="@mipmap/sfz_mb_90"
+        android:layout_marginTop="@dimen/dp48"
+        android:layout_marginLeft="@dimen/dp48"
+        android:layout_marginRight="@dimen/dp48"
+        android:scaleType="fitStart"
+        android:contentDescription="@string/app_name" />
+    <Button
+        android:id="@+id/takePicture"
+        android:layout_width="@dimen/button_width"
+        android:layout_height="@dimen/button_height"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="@dimen/activity_vertical_margin"
+        android:text="@string/paizhao"/>
+</RelativeLayout>

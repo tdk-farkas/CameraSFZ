@@ -1,0 +1,14 @@
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+    <style name="AppTheme" parent="android:Theme.NoTitleBar" type="text/css">
+        <!--<item name="colorPrimary">@color/colorPrimary</item>-->
+        <!--<item name="colorPrimaryDark">@color/colorPrimaryDark</item>-->
+        <!--<item name="colorAccent">@color/colorAccent</item>-->
+    </style>
+    <style name="FullTheme"  parent="android:Theme.Holo.NoActionBar.Fullscreen">
+        
+    </style>
+    <style name="CustomProgressDialog." parent="android:Theme.Dialog">
+        <item name="android:windowBackground">@null</item>
+        <item name="android:windowFrame">@null</item>
+    </style>
+</resources>
