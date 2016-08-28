@@ -4,8 +4,6 @@ import android.app.Application;
 import java.util.HashMap;
 import java.util.Map;
 
-import farkas.tdk.handler.ProgressHandler;
-
 /**
  * author：Administrator
  * time：2016/8/26.9:39

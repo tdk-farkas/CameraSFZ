@@ -4,6 +4,7 @@ import android.view.View;
 import android.widget.Button;
 
 import farkas.tdk.app.BaseActivity;
+import farkas.tdk.handler.NextHandler;
 
 /**
  * author：Administrator
@@ -11,6 +12,8 @@ import farkas.tdk.app.BaseActivity;
  */
 public class NextActivity extends BaseActivity {
     private Button button;
+    private NextHandler handler;
+
     /**
      * 返回上下文视图资源id
      *
@@ -34,7 +37,7 @@ public class NextActivity extends BaseActivity {
      */
     @Override
     protected void initValues() {
-
+        handler = new NextHandler(context);
     }
 
     /**
@@ -47,6 +50,6 @@ public class NextActivity extends BaseActivity {
 
     @Override
     public void onClick(View view) {
-        
+        handler.obtainMessage(view.getId(),context);
     }
 }

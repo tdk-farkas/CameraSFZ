@@ -1,52 +1,54 @@
-package farkas.tdk.handler;
+package farkas.tdk.handler.base;
 
 import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.util.Log;
 
 import java.lang.ref.WeakReference;
 
-import farkas.tdk.app.MyApp;
+import farkas.tdk.handler.util.ProgressHandler;
 
 /**
  * author：Administrator
  * time：2016/8/16.15:18
  */
-public abstract class BaseHandler<E> {
-    private static TheHandler handler;
+public abstract class BaseHandler implements StandardMsg {
+    private TheHandler handler;
     private static ProgressHandler ph;
-//// TODO: 2016/8/26  
-//    abstract BaseHandler(Activity a);
-    
-    protected static Handler instance(Activity activity, StandardMsg standardMsg) {
-        if (handler == null) {
-            try {
-                handler = new TheHandler(activity, standardMsg);
-                ph = new ProgressHandler(activity);
-            } catch (Exception e) {
-                return null;
-            }
-        }
+    protected static String TAG;
 
-        return handler;
+    public BaseHandler(Activity activity) {
+        TAG = activity.getClass().toString();
+        try {
+            handler = new TheHandler(activity);
+            ph = ProgressHandler.getProgress();
+            setStandardMsg(this);
+        } catch (Exception e) {
+            Log.e(TAG, e.getMessage());
+        }
     }
 
-    public Message obtainMessage() {
-        return handler.obtainMessage();
+    protected void setStandardMsg(StandardMsg standardMsg) {
+        handler.setUseMsg(standardMsg);
+    }
+
+    public Message obtainMessage(int what) {
+        Message msg = handler.obtainMessage();
+        msg.what = what;
+        return msg;
     }
 
     public Message obtainMessage(int what, Object obj) {
-        Message msg = obtainMessage();
-        msg.what = what;
+        Message msg = obtainMessage(what);
         msg.obj = obj;
         return msg;
     }
 
     public Message obtainMessage(int what, Bundle bundle) {
-        Message msg = obtainMessage();
-        msg.what = what;
+        Message msg = obtainMessage(what);
         msg.setData(bundle);
         return msg;
     }
@@ -59,14 +61,13 @@ public abstract class BaseHandler<E> {
         handler.sendEmptyMessage(what);
     }
 
-    public void showProgress(String title, String content) {
+    public void showProgress(Activity activity, String title, String content) {
         ph.setContent(title, content);
-        ph.sendEmptyMessage(ProgressHandler.PROGRESS_SHOW);
+        ph.sendMessage(obtainMessage(ProgressHandler.PROGRESS_SHOW, activity));
     }
 
-    public void showProgress() {
-        ph.setContent("", "");
-        ph.sendEmptyMessage(ProgressHandler.PROGRESS_SHOW);
+    public void showProgress(Activity activity) {
+        showProgress(activity, "", "");
     }
 
     public void hideProgress() {
@@ -74,34 +75,29 @@ public abstract class BaseHandler<E> {
     }
 
     /**
-     * 子类需要实现处理消息的函数
-     */
-    public interface StandardMsg {
-        void handleStandardMessage(Activity activity, int what, Bundle bundle);
-
-        void handleStandardMessage(Activity activity, int what, Object obj);
-
-        void error(String e);
-    }
-
-    /**
      * 处理消息
      */
-    private static class TheHandler extends Handler {
+    private class TheHandler extends Handler {
         private WeakReference<Activity> mActivity;
         private StandardMsg useMsg;
 
-        public TheHandler(Activity activity, StandardMsg useMsg) throws Exception {
+        public TheHandler(Activity activity) throws Exception {
             if (Looper.myLooper() != Looper.getMainLooper()) {
                 throw new Exception("只允许在主线程初始化该函数");
             } else {
                 this.mActivity = new WeakReference<Activity>(activity);
-                this.useMsg = useMsg;
             }
+        }
+
+        public void setUseMsg(StandardMsg useMsg) {
+            this.useMsg = useMsg;
         }
 
         @Override
         public void handleMessage(Message msg) {
+            if (useMsg == null) {
+                return;
+            }
             try {
                 Activity a = mActivity.get();
                 if (a != null) {

@@ -18,7 +18,7 @@ import farkas.tdk.util.MyUtil;
 import farkas.tdk.view.CameraSurface;
 import farkas.tdk.view.CanvasSurface;
 
-public class MainActivity extends BaseActivity{
+public class MainActivity extends BaseActivity {
     private CameraSurface cameraSurface;
     private CanvasSurface canvasSurface;
     private ImageView imageView;
@@ -26,9 +26,9 @@ public class MainActivity extends BaseActivity{
     private Button takePicture;
     private MainHandler handler;
     private String TAG = "";
-    
+
     @Override
-    protected int initLayout(){
+    protected int initLayout() {
         return R.layout.activity_main;
     }
 
@@ -52,7 +52,7 @@ public class MainActivity extends BaseActivity{
         try {
             handler = new MainHandler(this);
         } catch (Exception e) {
-            Toast.makeText(this,"初始化失败",Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "初始化失败", Toast.LENGTH_LONG).show();
             finish();
         }
 
@@ -71,7 +71,7 @@ public class MainActivity extends BaseActivity{
     @Override
     public void onClick(View view) {
         int what = view.getId();
-        switch (what){
+        switch (what) {
             case R.id.parentLayout:
                 what = handler.AUTOFOCUS;
                 break;
@@ -111,9 +111,9 @@ public class MainActivity extends BaseActivity{
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         Log.e(TAG, "缓存");
-        
+
         handler.sendMessage(handler.obtainMessage(handler.SAVESTATE, outState));
-        
+
         super.onSaveInstanceState(outState);
     }
 
@@ -130,7 +130,7 @@ public class MainActivity extends BaseActivity{
 
         super.onRestoreInstanceState(savedInstanceState);
     }
-    
+
     ///todo 私有函数 start
     private void drawableImage() {
         Resources res = getResources();
@@ -180,11 +180,11 @@ public class MainActivity extends BaseActivity{
         imageView.setLayoutParams(imageLayoutParams);
         takePicture.setLayoutParams(buttonLayoutParams);
     }
-    
+
     private void releaseCamera() {
         cameraSurface.releaseCamera();
     }
-    
+
     private void setCount(int count) {
         canvasSurface.setCount(count);
     }
@@ -193,40 +193,40 @@ public class MainActivity extends BaseActivity{
         return canvasSurface.getCount();
     }
     /// 私有函数 end
-    
+
     ///todo 业务函数 start
-        public void takePicture() {
-            CameraSurface.TakePictureCallback tpc = cameraSurface.getCameraCallback();
-            cameraSurface.takePicture(tpc);
-        }
-    
-        public void autoFocus() {
-            handler.showProgress();
-            new Thread(){
-                @Override
-                public void run() {
-                    try {
-                        Thread.sleep(5000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }finally {
-                        handler.hideProgress();
-                    }
+    public void takePicture() {
+        CameraSurface.TakePictureCallback tpc = cameraSurface.getCameraCallback();
+        cameraSurface.takePicture(tpc);
+    }
+
+    public void autoFocus() {
+        handler.showProgress(context);
+        new Thread() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } finally {
+                    handler.hideProgress();
                 }
-            }.start();
-            cameraSurface.autoFocus();
-        }
-    
-        public void saveState(Bundle saveState) {
-            releaseCamera();
-    
-            saveState.putInt("count", getCount());
-        }
-    
-        public void restoreState(Bundle saveState) {
-            drawableImage();
-    
-            setCount(saveState.getInt("count"));
-        }
+            }
+        }.start();
+        cameraSurface.autoFocus();
+    }
+
+    public void saveState(Bundle saveState) {
+        releaseCamera();
+
+        saveState.putInt("count", getCount());
+    }
+
+    public void restoreState(Bundle saveState) {
+        drawableImage();
+
+        setCount(saveState.getInt("count"));
+    }
     /// 业务函数 end
 }
