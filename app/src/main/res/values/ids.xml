@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="parentLayout" type="id"/>
+    <item name="cameraSurface" type="id"/>
+    <item name="canvasSurface" type="id"/>
+    <item name="imageView" type="id"/>
+    <item name="takePicture" type="id"/>
+    <item name="nextBtn" type="id"/>
+</resources>

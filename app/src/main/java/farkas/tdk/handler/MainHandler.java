@@ -14,10 +14,10 @@ import farksa.tdk.ocr.MainActivity;
  */
 public class MainHandler extends BaseHandler {
 
-    public final int SAVESTATE = 0;
-    public final int RESTORESTATE = 1;
+//    public final int SAVESTATE = 0;
+//    public final int RESTORESTATE = 1;
     public final int AUTOFOCUS = 2;
-    public final int TAKEPICTURE = 3;
+    public final int NEXTBTM = 3;
 
     public MainHandler(MainActivity activity) throws Exception {
         super(activity);
@@ -27,17 +27,17 @@ public class MainHandler extends BaseHandler {
     public void handleStandardMessage(Activity activity, int what, Bundle bundle) {
         MainActivity theActivity = (MainActivity) activity;
         switch (what) {
-            case SAVESTATE:
-                theActivity.saveState(bundle);
-                break;
-            case RESTORESTATE:
-                theActivity.restoreState(bundle);
-                break;
+//            case SAVESTATE:
+//                theActivity.saveState(bundle);
+//                break;
+//            case RESTORESTATE:
+//                theActivity.restoreState(bundle);
+//                break;
             case AUTOFOCUS:
                 theActivity.autoFocus();
                 break;
-            case TAKEPICTURE:
-                theActivity.takePicture();
+            case NEXTBTM:
+                theActivity.nextActivity();
                 break;
         }
     }

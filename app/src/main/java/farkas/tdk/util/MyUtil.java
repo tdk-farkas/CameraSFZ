@@ -2,6 +2,9 @@ package farkas.tdk.util;
 
 import android.content.Context;
 import android.content.res.Configuration;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.util.DisplayMetrics;
 import android.view.Display;
@@ -16,10 +19,10 @@ import farkas.tdk.app.MyApp;
  * time：2016/8/24.17:55
  */
 public class MyUtil {
-    public static Context getAppContext(){
+    public static Context getAppContext() {
         return MyApp.getInstance();
     }
-    
+
     /**
      * 获取屏幕宽高
      *
@@ -56,20 +59,20 @@ public class MyUtil {
             Display.class.getMethod("getRealSize", android.graphics.Point.class).invoke(display, realSize);
             heightPixels = realSize.y;
         }
-        
+
         return new int[]{metrics.widthPixels, heightPixels};
     }
 
-    /**
-     * 获取底部虚拟按钮高度
-     * 
-     * @return int
-     */
-    public static int getNavigationBar() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-        int  h1 = getWidthAndHeight()[1];
-        int  h2 = getScreen()[1];
-        return  h2-h1;
-    }
+//    /**
+//     * 获取底部虚拟按钮高度
+//     *
+//     * @return int
+//     */
+//    public static int getNavigationBar() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+//        int h1 = getWidthAndHeight()[1];
+//        int h2 = getScreen()[1];
+//        return h2 - h1;
+//    }
 
     /**
      * 获取镜头的方向
@@ -99,5 +102,58 @@ public class MyUtil {
     public static int getStatusBarHeight() {
         int resourceId = getAppContext().getResources().getIdentifier("status_bar_height", "dimen", "android");
         return resourceId > 0 ? MyApp.getInstance().getResources().getDimensionPixelSize(resourceId) : 0;
+    }
+
+    /**
+     * 保持图片比例读取图片
+     *
+     * @param res       资源对象
+     * @param resId     资源id
+     * @param reqWidth  预计宽度
+     * @param reqHeight 预计高度
+     * @return bitmap
+     */
+    public static Bitmap decodeSampledBitmapFromResource(Resources res, int resId, int reqWidth, int reqHeight) {
+        final BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeResource(res, resId, options); // 读取图片长款
+        int[] size = calculateInSampleSize(options, reqWidth, reqHeight); // 计算inSampleSize 
+        options.inSampleSize = size[0];
+        options.inJustDecodeBounds = false;
+        Bitmap src = BitmapFactory.decodeResource(res, resId, options); // 载入一个稍大的缩略图
+        return createScaleBitmap(src, size[1], size[2]); // 进一步得到目标大小的缩略图
+    }
+
+    //确定 Bitmap 的缩放比, 并返回 修正了比例的 宽高
+    private static int[] calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
+        int width = options.outWidth;
+        int height = options.outHeight;
+        int inSampleSize = 1;
+
+        float whb = Float.intBitsToFloat(width)  / Float.intBitsToFloat(height) ;
+
+        if (width / reqWidth >= height / reqHeight) {
+            reqHeight = (int) (reqWidth / whb + 0.5f);
+        } else {
+            reqWidth = (int) (reqHeight / whb + 0.5f);
+        }
+
+        if (width > reqWidth) {
+            int halfWidth = width / 2;
+            while ((halfWidth / inSampleSize) > reqWidth) {
+                inSampleSize *= 2;
+            }
+        }
+
+        return new int[]{inSampleSize, reqWidth, reqHeight};
+    }
+
+    //按照指定 宽高加载图片
+    private static Bitmap createScaleBitmap(Bitmap src, int dstWidth, int dstHeight) {
+        Bitmap dst = Bitmap.createScaledBitmap(src, dstWidth, dstHeight, false);
+        if (src != dst) { // 如果没有缩放，那么不回收
+            src.recycle(); // 释放Bitmap的native像素数组
+        }
+        return dst;
     }
 }

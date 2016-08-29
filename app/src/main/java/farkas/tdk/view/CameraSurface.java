@@ -50,18 +50,7 @@ public class CameraSurface extends SurfaceView implements SurfaceHolder.Callback
 
     @Override
     public void surfaceCreated(SurfaceHolder surfaceHolder) {
-        try {
-            camera = Camera.open();//打开硬件摄像头，这里导包得时候一定要注意是android.hardware.Camera
-            camera.setPreviewDisplay(getHolder());//通过SurfaceView显示取景画面
-            int[] wh = MyUtil.getWidthAndHeight();
-            initParameters(wh[1], wh[0]);
-        } catch (IOException e) {
-            Log.e(TAG, e.toString());
-        } catch (Exception e) {
-            Log.e(TAG, e.toString());
-        } finally {
-            startPreview();
-        }
+        openCamera();
     }
 
     @Override
@@ -109,12 +98,29 @@ public class CameraSurface extends SurfaceView implements SurfaceHolder.Callback
         }
     }
 
+    public void openCamera() {
+        if (camera == null) {
+            try {
+                camera = Camera.open();//打开硬件摄像头，这里导包得时候一定要注意是android.hardware.Camera
+                camera.setPreviewDisplay(getHolder());//通过SurfaceView显示取景画面
+                int[] wh = MyUtil.getWidthAndHeight();
+                initParameters(wh[1], wh[0]);
+            } catch (IOException e) {
+                Log.e(TAG, e.toString());
+            } catch (Exception e) {
+                Log.e(TAG, e.toString());
+            } finally {
+                startPreview(); 
+            }
+        }
+    }
+
     /**
      * 开始预览
      *
      * @return 预览状态
      */
-    public boolean startPreview() {
+    private boolean startPreview() {
         if (camera != null) {
             camera.startPreview();//开始预览
             isPreview = true;//设置是否预览参数为真
@@ -183,7 +189,8 @@ public class CameraSurface extends SurfaceView implements SurfaceHolder.Callback
     }
 
     /**
-     *  返回照相回掉函数实例
+     * 返回照相回掉函数实例
+     *
      * @return TakePictureCallback
      */
     public TakePictureCallback getCameraCallback() {
@@ -205,9 +212,10 @@ public class CameraSurface extends SurfaceView implements SurfaceHolder.Callback
 
         /**
          * 新建线程保存图片
+         *
          * @param data 二进制图片数据
          */
-        private void saveBitmap(final byte[] data){
+        private void saveBitmap(final byte[] data) {
             new Thread() {
                 @Override
                 public void run() {
@@ -249,7 +257,7 @@ public class CameraSurface extends SurfaceView implements SurfaceHolder.Callback
                 }
             }.start();
         }
-        
+
         /**
          * 返回一个 文件夹 名称  默认为 OCR
          */
@@ -263,14 +271,14 @@ public class CameraSurface extends SurfaceView implements SurfaceHolder.Callback
         public String fileName() {
             return dirName() + "_" + System.currentTimeMillis();
         }
-        
+
         /**
          * 文件后缀名
          */
         private String fileType() {
             return "jpg";
         }
-        
+
         /**
          * 显示消息
          */
@@ -287,12 +295,12 @@ public class CameraSurface extends SurfaceView implements SurfaceHolder.Callback
             public void handleMessage(Message msg) {
                 switch (msg.what) {
                     case 1:
-                        if(pd == null)
-                        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                            pd = new ProgressDialog(context, ProgressDialog.THEME_DEVICE_DEFAULT_DARK);
-                        }else{
-                            pd = new ProgressDialog(context);
-                        }
+                        if (pd == null)
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                                pd = new ProgressDialog(context, ProgressDialog.THEME_DEVICE_DEFAULT_DARK);
+                            } else {
+                                pd = new ProgressDialog(context);
+                            }
                         pd.setTitle("正在处理图片");
                         pd.setMessage("请稍后...");
                         pd.setCancelable(false);

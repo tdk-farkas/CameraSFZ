@@ -1,10 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@id/parentLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+    <!--<farkas.tdk.view.CameraSurface-->
+        <!--android:id="@id/cameraSurface"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:fitsSystemWindows="true"/>-->
+    <farkas.tdk.view.CanvasSurface
+        android:id="@id/canvasSurface"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="true"/>
     <Button
-        android:id="@+id/button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/app_name"/>
-</LinearLayout>
+        android:id="@id/takePicture"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_width="@dimen/button_width"
+        android:layout_height="@dimen/button_height"
+        android:layout_margin="@dimen/activity_vertical_margin"
+        android:fitsSystemWindows="true"
+        android:text="@string/paizhao"/>
+</FrameLayout>

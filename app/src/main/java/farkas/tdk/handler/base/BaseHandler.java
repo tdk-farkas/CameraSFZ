@@ -63,7 +63,10 @@ public abstract class BaseHandler implements StandardMsg {
 
     public void showProgress(Activity activity, String title, String content) {
         ph.setContent(title, content);
-        ph.sendMessage(obtainMessage(ProgressHandler.PROGRESS_SHOW, activity));
+        Message msg = ph.obtainMessage();
+        msg.what = ProgressHandler.PROGRESS_SHOW;
+        msg.obj = activity;
+        ph.sendMessage(msg);
     }
 
     public void showProgress(Activity activity) {
@@ -77,9 +80,9 @@ public abstract class BaseHandler implements StandardMsg {
     /**
      * 处理消息
      */
-    private class TheHandler extends Handler {
+    private static class TheHandler extends Handler {
         private WeakReference<Activity> mActivity;
-        private StandardMsg useMsg;
+        private WeakReference<StandardMsg> mStandard;
 
         public TheHandler(Activity activity) throws Exception {
             if (Looper.myLooper() != Looper.getMainLooper()) {
@@ -90,24 +93,24 @@ public abstract class BaseHandler implements StandardMsg {
         }
 
         public void setUseMsg(StandardMsg useMsg) {
-            this.useMsg = useMsg;
+            this.mStandard = new WeakReference<StandardMsg>(useMsg);
         }
 
         @Override
         public void handleMessage(Message msg) {
+            Activity a = mActivity.get();
+            StandardMsg useMsg = mStandard.get();
             if (useMsg == null) {
+                return;
+            } else if (a == null) {
+                useMsg.error("该activity对象已经被系统回收");
                 return;
             }
             try {
-                Activity a = mActivity.get();
-                if (a != null) {
-                    if (msg.obj != null) {
-                        useMsg.handleStandardMessage(a, msg.what, msg.obj);
-                    } else {
-                        useMsg.handleStandardMessage(a, msg.what, msg.getData());
-                    }
+                if (msg.obj != null) {
+                    useMsg.handleStandardMessage(a, msg.what, msg.obj);
                 } else {
-                    useMsg.error("当前handler对应的activity已经不存在");
+                    useMsg.handleStandardMessage(a, msg.what, msg.getData());
                 }
             } catch (Exception e) {
                 useMsg.error(e.getMessage());
@@ -115,5 +118,9 @@ public abstract class BaseHandler implements StandardMsg {
                 msg.obj = null;
             }
         }
+    }
+    
+    protected void Log(String msg){
+        Log.e(TAG,msg);
     }
 }
