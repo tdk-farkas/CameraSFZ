@@ -7,7 +7,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.ImageFormat;
 import android.hardware.Camera;
 import android.os.Build;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.util.AttributeSet;
@@ -69,22 +68,30 @@ public class CameraSurface extends SurfaceView implements SurfaceHolder.Callback
     public void initParameters(int width, int height) {
         Camera.Parameters parameters = camera.getParameters();//得到摄像头的参数
         int PreviewWidth = width, PreviewHeight = height;
-        boolean isSize = true;
+        boolean isSize = false;
 
         List<Camera.Size> sizeList = parameters.getSupportedPreviewSizes();
         if (sizeList.size() > 1) {
             for (Camera.Size cur : sizeList) {
-                if (cur.width >= PreviewWidth
-                        && cur.height >= PreviewHeight) {
+                if (cur.width == PreviewWidth
+                        && cur.height == PreviewHeight) {
                     PreviewWidth = cur.width;
                     PreviewHeight = cur.height;
+                    isSize = true;
                     break;
                 }
+            }
+            if(!isSize){
+                Camera.Size cur = sizeList.get(0);
+                PreviewWidth = cur.width;
+                PreviewHeight = cur.height;
+                 isSize = true;
             }
         } else if (sizeList.size() > 0) {
             Camera.Size cur = sizeList.get(0);
             PreviewWidth = cur.width;
             PreviewHeight = cur.height;
+            isSize = true;
         } else {
             isSize = false;
         }
@@ -103,14 +110,14 @@ public class CameraSurface extends SurfaceView implements SurfaceHolder.Callback
             try {
                 camera = Camera.open();//打开硬件摄像头，这里导包得时候一定要注意是android.hardware.Camera
                 camera.setPreviewDisplay(getHolder());//通过SurfaceView显示取景画面
-                int[] wh = MyUtil.getWidthAndHeight();
+                int[] wh = MyUtil.getScreen();
                 initParameters(wh[1], wh[0]);
             } catch (IOException e) {
                 Log.e(TAG, e.toString());
             } catch (Exception e) {
                 Log.e(TAG, e.toString());
             } finally {
-                startPreview(); 
+                startPreview();
             }
         }
     }
@@ -206,8 +213,25 @@ public class CameraSurface extends SurfaceView implements SurfaceHolder.Callback
         @Override
         public void onPictureTaken(byte[] data, Camera camera) {
             if (pd == null) {
-                saveBitmap(data);
+//                saveBitmap(data);
+                saveCard(data);
             }
+        }
+
+        private void saveCard(final byte[] data) {
+            new Thread() {
+                @Override
+                public void run() {
+                    handler.sendEmptyMessage(1);
+                    try {
+                        MyUtil.saveImageByByte(data, dirName(), fileName());
+                    } catch (Exception e) {
+                        showMsg(e.toString());
+                    } finally {
+                        handler.sendEmptyMessage(2);
+                    }
+                }
+            }.start();
         }
 
         /**
@@ -220,39 +244,19 @@ public class CameraSurface extends SurfaceView implements SurfaceHolder.Callback
                 @Override
                 public void run() {
                     handler.sendEmptyMessage(1);
-                    boolean isSave = false;
-                    String dir = "", fileName = "";
                     try {
                         Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
-                        String sdStatus = Environment.getExternalStorageState();
-                        if (sdStatus.equals(Environment.MEDIA_MOUNTED)) {
-                            dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM) + "/" + dirName();
-                            File directory = new File(dir);
-                            if (!directory.exists()) {
-                                if (!directory.mkdirs()) {
-                                    String msg = "创建图片临时目录失败，请允许该应用读写sd卡";
-                                    showMsg(msg);
-                                    return;
-                                }
-                            }
-                            fileName = fileName() + "." + fileType();
-                            File file = new File(directory, fileName);
-                            FileOutputStream outputStream = new FileOutputStream(file);
-                            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
-                            outputStream.close();
-                            isSave = true;
-                        } else {
-                            String msg = "没有找到sd卡无法保存照片";
-                            showMsg(msg);
-                        }
+                        File file = MyUtil.createDirAndFile(dirName(), fileName() + "." + fileType());
+                        FileOutputStream outputStream = new FileOutputStream(file);
+                        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
+                        outputStream.close();
+                        String msg = "照片保存在：" + file.getAbsolutePath() + "文件";
+                        showMsg(msg);
                     } catch (Exception e) {
                         Log.e(TAG, e.toString());
+                        showMsg(e.toString());
                     } finally {
                         handler.sendEmptyMessage(2);
-                        if (isSave) {
-                            String msg = "照片保存在：" + dir + "/" + fileName + "文件";
-                            showMsg(msg);
-                        }
                     }
                 }
             }.start();

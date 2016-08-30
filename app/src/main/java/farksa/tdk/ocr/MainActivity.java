@@ -1,9 +1,7 @@
 package farksa.tdk.ocr;
 
-import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
@@ -113,7 +111,7 @@ public class MainActivity extends BaseActivity {
     ///todo 私有函数 start
     private void drawableImage() {
         Resources res = getResources();
-        Drawable drawable;
+//        Drawable drawable;
         RelativeLayout.LayoutParams buttonLayoutParams = (RelativeLayout.LayoutParams) nextBtn.getLayoutParams();
         RelativeLayout.LayoutParams imageLayoutParams = (RelativeLayout.LayoutParams) imageView.getLayoutParams();
         if (MyUtil.isLandscape()) {

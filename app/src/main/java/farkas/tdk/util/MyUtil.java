@@ -6,13 +6,21 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
+import android.os.Environment;
 import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.WindowManager;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 
 import farkas.tdk.app.MyApp;
+import farksa.tdk.ocr.R;
 
 /**
  * author：Administrator
@@ -117,7 +125,7 @@ public class MyUtil {
         final BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
         BitmapFactory.decodeResource(res, resId, options); // 读取图片长款
-        int[] size = calculateInSampleSize(options, reqWidth, reqHeight); // 计算inSampleSize 
+        int[] size = calculateInSampleSize(options.outWidth, options.outHeight, reqWidth, reqHeight); // 计算inSampleSize 
         options.inSampleSize = size[0];
         options.inJustDecodeBounds = false;
         Bitmap src = BitmapFactory.decodeResource(res, resId, options); // 载入一个稍大的缩略图
@@ -125,12 +133,10 @@ public class MyUtil {
     }
 
     //确定 Bitmap 的缩放比, 并返回 修正了比例的 宽高
-    private static int[] calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
-        int width = options.outWidth;
-        int height = options.outHeight;
+    private static int[] calculateInSampleSize(int width, int height, int reqWidth, int reqHeight) {
         int inSampleSize = 1;
 
-        float whb = Float.intBitsToFloat(width)  / Float.intBitsToFloat(height) ;
+        float whb = Float.intBitsToFloat(width) / Float.intBitsToFloat(height);
 
         if (width / reqWidth >= height / reqHeight) {
             reqHeight = (int) (reqWidth / whb + 0.5f);
@@ -155,5 +161,72 @@ public class MyUtil {
             src.recycle(); // 释放Bitmap的native像素数组
         }
         return dst;
+    }
+
+    /**
+     * 裁剪身份证图像并保持至本地
+     *
+     * @param data     图片字节数组
+     * @param dirName  根目录为相册目录，在此之下的目录名
+     * @param fileName 文件名
+     * @return 保存结果
+     * @throws JSONException
+     * @throws IOException
+     */
+    public static JSONObject saveImageByByte(byte[] data, String dirName, String fileName) throws JSONException, IOException {
+        JSONObject json = new JSONObject();
+
+        fileName = fileName + ".jpg";
+        File file = createDirAndFile(dirName, fileName);
+
+        String msg = "成功保存到："+file.getAbsolutePath()+"文件";
+        FileOutputStream outputStream = new FileOutputStream(file);
+        Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
+
+        int[] dh = getWidthAndHeight();
+        int margin = getAppContext().getResources().getDimensionPixelSize(R.dimen.dp48);
+        int height = dh[0] - margin*2;
+        int width = (int)(height * 1.583+0.5f);
+        
+        if(bitmap.getHeight() > dh[0]) {
+            bitmap = createScaleBitmap(bitmap, dh[1], dh[0]);
+        }
+        
+        Bitmap bit = Bitmap.createBitmap(bitmap, margin, margin, width, height);
+        bitmap.recycle();
+
+        bit.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
+        outputStream.close();
+
+        bit.recycle();
+
+        json.put("msg", msg);
+        json.put("state", true);
+
+        return json;
+    }
+
+    /**
+     * 在相册目录下创建相关目录和文件
+     *
+     * @param dirName  目录名
+     * @param fileName 文件名
+     * @return 创建好的文件对象
+     * @throws IOException io异常
+     */
+    public static File createDirAndFile(String dirName, String fileName) throws IOException {
+        String sdStatus = Environment.getExternalStorageState();
+        if (sdStatus.equals(Environment.MEDIA_MOUNTED)) {
+            String dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM) + "/" + dirName;
+            File directory = new File(dir);
+            if (!directory.exists()) {
+                if (!directory.mkdirs()) {
+                    throw new IOException("没有读写sd卡权限");
+                }
+            }
+            return new File(directory, fileName);
+        } else {
+            throw new IOException("没有找到sd卡");
+        }
     }
 }
