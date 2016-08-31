@@ -5,11 +5,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="farksa.tdk.ocr.MainActivity">
-    <farkas.tdk.view.CameraSurface
-        android:id="@id/cameraSurface"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fitsSystemWindows="true"/>
+    <!--<farkas.tdk.view.CameraSurface-->
+        <!--android:id="@id/cameraSurface"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:fitsSystemWindows="true"/>-->
     <ImageView
         android:id="@id/imageView"
         android:layout_width="match_parent"
@@ -20,10 +20,16 @@
         android:layout_marginRight="@dimen/dp48"
         android:scaleType="fitStart"
         android:contentDescription="@string/app_name" />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/dp24"
+        android:layout_above="@id/nextBtn"
+        android:text="@string/explain"/>
     <Button
         android:id="@id/nextBtn"
-        android:layout_width="@dimen/dp64"
-        android:layout_height="@dimen/button_height"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_alignParentBottom="true"
         android:layout_margin="@dimen/activity_vertical_margin"

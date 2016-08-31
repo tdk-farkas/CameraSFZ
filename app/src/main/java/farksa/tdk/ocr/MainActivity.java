@@ -1,5 +1,6 @@
 package farksa.tdk.ocr;
 
+import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.os.Build;
@@ -17,7 +18,7 @@ import farkas.tdk.util.MyUtil;
 import farkas.tdk.view.CameraSurface;
 
 public class MainActivity extends BaseActivity {
-    private CameraSurface cameraSurface;
+//    private CameraSurface cameraSurface;
     private ImageView imageView;
     private RelativeLayout parentLayout;
     private Button nextBtn;
@@ -34,7 +35,7 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void initViews() {
         parentLayout = (RelativeLayout) findViewById(R.id.parentLayout);
-        cameraSurface = (CameraSurface) findViewById(R.id.cameraSurface);
+//        cameraSurface = (CameraSurface) findViewById(R.id.cameraSurface);
         imageView = (ImageView) findViewById(R.id.imageView);
         nextBtn = (Button) findViewById(R.id.nextBtn);
     }
@@ -158,7 +159,7 @@ public class MainActivity extends BaseActivity {
         int width = dh[0] - margin * 2;
         int height = dh[1] - margin;
 
-        Bitmap bitmap = MyUtil.decodeSampledBitmapFromResource(res, R.mipmap.sfz_x_90, width, height);
+        Bitmap bitmap = MyUtil.decodeSampledBitmapFromResource(res, R.mipmap.sfz_y_90, width, height);
         imageView.setImageBitmap(bitmap);
 //        imageView.setImageDrawable(drawable);
         imageView.setLayoutParams(imageLayoutParams);
@@ -166,15 +167,16 @@ public class MainActivity extends BaseActivity {
     }
 
     private void releaseCamera() {
-        cameraSurface.releaseCamera();
+//        cameraSurface.releaseCamera();
     }
     /// 私有函数 end
 
     ///todo 业务函数 start
     public void nextActivity() {
-//        Intent intent = new Intent(context,NextActivity.class);
-//        startActivity(intent);
-        cameraSurface.takePicture(cameraSurface.getCameraCallback());
+        Intent intent = new Intent(context,NextActivity.class);
+        startActivity(intent);
+//        overridePendingTransition(R.anim.activity_out,R.anim.activity_in);
+//        cameraSurface.takePicture(cameraSurface.getCameraCallback());
     }
 
     public void autoFocus() {
@@ -191,7 +193,7 @@ public class MainActivity extends BaseActivity {
 //                }
 //            }
 //        }.start();
-        cameraSurface.autoFocus();
+//        cameraSurface.autoFocus();
     }
     /// 业务函数 end
 }

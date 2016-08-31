@@ -16,6 +16,8 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.widget.Toast;
 
+import org.json.JSONObject;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -224,7 +226,8 @@ public class CameraSurface extends SurfaceView implements SurfaceHolder.Callback
                 public void run() {
                     handler.sendEmptyMessage(1);
                     try {
-                        MyUtil.saveImageByByte(data, dirName(), fileName());
+                        JSONObject json = MyUtil.saveImageByByte(data, dirName(), fileName());
+                        showMsg(json.getString("msg"));
                     } catch (Exception e) {
                         showMsg(e.toString());
                     } finally {

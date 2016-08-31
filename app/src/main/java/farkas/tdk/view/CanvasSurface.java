@@ -7,6 +7,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.PixelFormat;
 import android.graphics.Region;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -37,6 +38,10 @@ public class CanvasSurface extends SurfaceView implements SurfaceHolder.Callback
         this.context = context;
         this.TAG = this.getClass().toString();
         this.getHolder().addCallback(this);
+        if(!isInEditMode()) {
+            setZOrderMediaOverlay(true);
+            getHolder().setFormat(PixelFormat.TRANSLUCENT);
+        }
     }
 
     public CanvasSurface(Context context, AttributeSet attrs) {
@@ -44,6 +49,10 @@ public class CanvasSurface extends SurfaceView implements SurfaceHolder.Callback
         this.context = context;
         this.TAG = this.getClass().toString();
         this.getHolder().addCallback(this);
+        if(!isInEditMode()) {
+            setZOrderMediaOverlay(true);
+            getHolder().setFormat(PixelFormat.TRANSLUCENT);
+        }
     }
 
     @Override
@@ -103,7 +112,7 @@ public class CanvasSurface extends SurfaceView implements SurfaceHolder.Callback
             int width = dh[0] - margin * 2;
             int height = dh[1] - margin;
 
-            Bitmap bitmap = MyUtil.decodeSampledBitmapFromResource(resources, R.mipmap.sfz_x_90, width, height);
+            Bitmap bitmap = MyUtil.decodeSampledBitmapFromResource(resources, R.mipmap.sfz_y_90, width, height);
 
 //            Log.e(TAG,"字体颜色："+colorAccent);
 //            Log.e(TAG,"深颜色："+colorPrimaryDark);

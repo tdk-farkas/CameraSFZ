@@ -3,10 +3,12 @@
         <!--<item name="colorPrimary">@color/colorPrimary</item>-->
         <!--<item name="colorPrimaryDark">@color/colorPrimaryDark</item>-->
         <!--<item name="colorAccent">@color/colorAccent</item>-->
+        <item name="@android:windowAnimationStyle">@style/myact</item>
     </style>
     <style name="FullTheme"  parent="android:Theme.Holo.NoActionBar.Fullscreen">
-        
+        <item name="@android:windowAnimationStyle">@style/myact</item>
     </style>
+    
     <style name="CustomProgressDialog." parent="android:Theme.Dialog">
         <item name="android:windowBackground">@null</item>
         <item name="android:windowFrame">@null</item>

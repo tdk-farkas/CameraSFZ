@@ -3,10 +3,10 @@ package farksa.tdk.ocr;
 import android.content.res.Resources;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.RelativeLayout;
 
 import farkas.tdk.app.BaseActivity;
 import farkas.tdk.handler.NextHandler;
@@ -21,7 +21,7 @@ import farkas.tdk.view.CanvasSurface;
 public class NextActivity extends BaseActivity {
     private CameraSurface cameraSurface;
     private CanvasSurface canvasSurface;
-    private FrameLayout parentLayout;
+    private RelativeLayout parentLayout;
     private Button takePicture;
     private NextHandler handler;
 
@@ -40,9 +40,9 @@ public class NextActivity extends BaseActivity {
      */
     @Override
     protected void initViews() {
-        parentLayout = (FrameLayout) findViewById(R.id.parentLayout);
+        parentLayout = (RelativeLayout)findViewById(R.id.parentLayout);
         takePicture = (Button) findViewById(R.id.takePicture);
-//        cameraSurface = (CameraSurface) findViewById(R.id.cameraSurface);
+        cameraSurface = (CameraSurface) findViewById(R.id.cameraSurface);
         canvasSurface = (CanvasSurface) findViewById(R.id.canvasSurface);
     }
 

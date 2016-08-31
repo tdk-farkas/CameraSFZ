@@ -19,14 +19,16 @@
         android:theme="@style/AppTheme">
         <activity android:name=".MainActivity"
             android:launchMode="singleTask"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".NextActivity">
+        <activity android:name=".NextActivity"
+            android:theme="@style/AppTheme">
             <intent-filter>
                 <action android:name="farkas.intent.action.VIEW"/>
                 <category android:name="android.intent.category.DEFAULT" />
